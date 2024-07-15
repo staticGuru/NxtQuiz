@@ -1,0 +1,24 @@
+services:
+  db-mysql:
+    image: mysql:8.3
+    container_name: simplestudy-ne-db-mysql
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: ""
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+      MYSQL_DATABASE: simplestudy
+    volumes:
+      - ./docker/configs/mysql/init/simplestudy-dump.sql:/docker-entrypoint-initdb.d/1.sql
+      - ./docker/configs/mysql/my.cnf:/etc/mysql/my.cnf
+      - ./docker/configs/mysql/data:/var/lib/mysql
+    networks:
+      - simplestudy-ne
+
+networks:
+  simplestudy-ne:
+    name: simplestudy-ne
+    driver: bridge
+

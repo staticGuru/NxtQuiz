@@ -1,0 +1,1153 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model cao_grades {
+  row_id     Int @id @default(autoincrement())
+  user_id    Int
+  subject_id Int
+  level      Int
+  grade      Int
+}
+
+model contact_us {
+  cu_id      Int      @id @default(autoincrement())
+  name       String   @db.VarChar(50)
+  email      String   @db.VarChar(50)
+  phone      String   @db.VarChar(20)
+  subject    Int
+  message    String   @db.MediumText
+  created_on DateTime @default(now()) @db.DateTime(0)
+}
+
+model countries {
+  country_code String  @id @default("WW") @db.Char(2)
+  country_name String  @db.VarChar(100)
+  is_supported Boolean @default(false)
+  domain       String? @db.VarChar(255)
+  exam         exam[]
+  level        level[]
+  users        users[]
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model coupons {
+  coupon_id     Int            @id @default(autoincrement())
+  coupon_title  String?        @db.VarChar(50)
+  code          String         @db.VarChar(20)
+  discount_type Int            @db.TinyInt
+  user_id       String         @db.VarChar(200)
+  from_date     DateTime       @db.Date
+  to_date       DateTime       @db.Date
+  discount      String         @db.VarChar(20)
+  coupon_limit  String         @db.VarChar(10)
+  status        Int            @db.TinyInt
+  created       DateTime       @default(now()) @db.DateTime(0)
+}
+
+model email_templates {
+  id               Int      @id @default(autoincrement())
+  template_name    String?  @db.VarChar(150)
+  template_subject String?  @db.MediumText
+  template_body    String?  @db.MediumText
+  template_created DateTime @db.DateTime(0)
+  template_updated DateTime @db.DateTime(0)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model essay {
+  essayId       Int     @id @default(autoincrement())
+  examId        Int
+  subject_id    Int
+  topicId       Int
+  levelId       Int
+  userId        Int
+  parentId      Int?
+  uploadType    Int     @default(1)
+  contentType   Int     @default(1)
+  text          String  @db.MediumText
+  originalText  String  @db.MediumText
+  highlightText String  @db.MediumText
+  essay_title   String? @db.VarChar(500)
+  sub_topic_id  Int?
+
+  @@index([sub_topic_id], map: "fk_essay_sub_topic_id")
+}
+
+model essay_comment {
+  ec_id       Int      @id @default(autoincrement())
+  essayId     Int
+  userId      Int
+  heading     String   @db.MediumText
+  description String   @db.MediumText
+  date        DateTime @db.Date
+}
+
+model essays_progress {
+  id           Int      @id @default(autoincrement())
+  user_id      Int
+  asset_id     Int
+  topic_id     Int
+  total_pages  Int
+  current_page Int
+  created_on   DateTime @default(now()) @db.Timestamp(0)
+  updated_on   DateTime @default(now()) @db.Timestamp(0)
+}
+
+model exam {
+  exam_id          Int           @id @default(autoincrement())
+  exam_name        String        @db.VarChar(50)
+  exam_description String        @db.MediumText
+  created_by       Int?
+  created_on       DateTime      @default(now()) @db.DateTime(0)
+  updated_by       Int?
+  updated_on       DateTime      @default(now()) @db.DateTime(0)
+  country_code     String        @default("WW") @db.Char(2)
+  status           Int           @default(1) @db.TinyInt
+  exam_slug        String        @db.VarChar(150)
+  start_date       DateTime      @db.DateTime(0)
+  end_date         DateTime      @db.DateTime(0)
+  countries        countries     @relation(fields: [country_code], references: [country_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_exam_country")
+  exam_papers      exam_papers[]
+  exam_year        exam_year[]
+  notes            notes[]
+  question         question[]
+  subject          subject[]
+  topic            topic[]
+  users            users[]
+
+  @@index([country_code], map: "fk_exam_country")
+}
+
+model exam_board {
+  exam_board_id                      Int       @id @default(autoincrement())
+  exam_board_name                    String    @db.VarChar(50)
+  exam_board_description             String    @db.Text
+  exam_board_image_url               String    @db.Text
+  created_by                         Int?
+  created_on                         DateTime? @default(now()) @db.DateTime(0)
+  updated_by                         Int?
+  updated_on                         DateTime? @default(now()) @db.DateTime(0)
+  is_supported                       Int       @default(1) @db.TinyInt
+  exam_board_slug                    String    @db.VarChar(150)
+  users_exam_board_created_byTousers users?    @relation("exam_board_created_byTousers", fields: [created_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "exam_board_ibfk_1")
+  users_exam_board_updated_byTousers users?    @relation("exam_board_updated_byTousers", fields: [updated_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "exam_board_ibfk_2")
+  subject                            subject[]
+
+  @@index([created_by], map: "created_by")
+  @@index([updated_by], map: "updated_by")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model exam_builder {
+  exam_builder_id Int      @id @default(autoincrement())
+  id              Int
+  user_id         Int
+  exam_id         Int
+  subject_id      Int
+  topic_id        Int
+  exam_title      String   @db.VarChar(100)
+  exam_desc       String   @db.VarChar(100)
+  exam_name       String   @db.VarChar(100)
+  is_name         Int      @db.TinyInt
+  is_desc         Int      @db.TinyInt
+  question        String   @db.Text
+  answer          String   @db.Text
+  created_on      DateTime @default(now()) @db.DateTime(0)
+  updated_on      DateTime @default(now()) @db.DateTime(0)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model exam_papers {
+  exam_papers_id       Int                             @id @default(autoincrement())
+  exam_id              Int
+  subject_id           Int
+  level_id             Int
+  sub_level_id         Int                             @db.TinyInt
+  question             String?                         @db.VarChar(255)
+  answer               String?                         @db.VarChar(255)
+  year                 Int
+  order_by             Float                           @db.Float
+  created_by           Int?
+  created_on           DateTime                        @default(now()) @db.DateTime(0)
+  updated_by           Int?
+  updated_on           DateTime                        @default(now()) @db.DateTime(0)
+  status               Int                             @default(1) @db.TinyInt
+  paper_number         String?                         @db.VarChar(5)
+  month                String?                         @db.VarChar(100)
+  specification_type   exam_papers_specification_type?
+  subject              subject                         @relation(fields: [subject_id], references: [subject_id], onDelete: Cascade, onUpdate: NoAction, map: "exam_papers_ibfk_1")
+  exam                 exam                            @relation(fields: [exam_id], references: [exam_id], onDelete: Cascade, onUpdate: NoAction, map: "exam_papers_ibfk_2")
+  exam_papers_progress exam_papers_progress[]
+
+  @@index([exam_id, subject_id], map: "exam_id")
+  @@index([subject_id], map: "subject_id")
+}
+
+model exam_questions_progress {
+  id                    Int      @id @default(autoincrement())
+  user_id               Int
+  asset_id              Int
+  topic_id              Int
+  marking_scheme_opened Int
+  created_on            DateTime @default(now()) @db.Timestamp(0)
+  updated_on            DateTime @default(now()) @db.Timestamp(0)
+}
+
+model exam_year {
+  exam_year_id         Int       @id @default(autoincrement())
+  exam_year_title      String    @db.VarChar(100)
+  exam_id              Int
+  is_first_year        Boolean   @default(false)
+  is_last_year         Boolean   @default(false)
+  is_before_university Boolean   @default(false)
+  exam_year_icon       String?   @db.VarChar(255)
+  exam_start_date      DateTime? @db.Date
+  exam_end_date        DateTime? @db.Date
+  exam                 exam      @relation(fields: [exam_id], references: [exam_id], onDelete: NoAction, onUpdate: NoAction, map: "exam_year_ibfk_1")
+
+  @@index([exam_id], map: "exam_id")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model faq {
+  faq_id     Int      @id @default(autoincrement())
+  question   String   @db.MediumText
+  answer     String   @db.MediumText
+  order_by   Float    @default(0) @db.Float
+  status     Int      @db.TinyInt
+  created_at DateTime @default(now()) @db.DateTime(0)
+  updated_at DateTime @default(now()) @db.DateTime(0)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model homework {
+  homework_id Int      @id @default(autoincrement())
+  user_id     Int
+  heading     Int
+  task        String   @db.MediumText
+  status      Int      @db.TinyInt
+  color       String   @db.VarChar(20)
+  created_on  DateTime @default(now()) @db.DateTime(0)
+  users       users    @relation(fields: [user_id], references: [user_id], onDelete: Cascade, onUpdate: NoAction, map: "homework_ibfk_1")
+
+  @@index([user_id], map: "user_id")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model level {
+  level_id     Int        @id @default(autoincrement())
+  level_name   String     @db.VarChar(50)
+  status       Int        @db.TinyInt
+  created_by   Int?
+  created_on   DateTime   @default(now()) @db.DateTime(0)
+  updated_by   Int?
+  updated_on   DateTime   @default(now()) @db.DateTime(0)
+  country_code String     @default("WW") @db.Char(2)
+  countries    countries  @relation(fields: [country_code], references: [country_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_level_country")
+  notes        notes[]
+  question     question[]
+  topic        topic[]
+
+  @@index([country_code], map: "fk_level_country")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model membership {
+  membership_id       Int      @id @default(autoincrement())
+  membership_type     Int      @db.TinyInt
+  plan_name           String   @db.VarChar(240)
+  stripeId            String?  @db.MediumText
+  apple_id            String?  @db.VarChar(50)
+  user_access         Int      @db.TinyInt
+  period              String   @db.VarChar(10)
+  price               String   @db.VarChar(10)
+  description         String   @db.MediumText
+  is_popular          Int      @db.TinyInt
+  trial_period        String   @db.VarChar(10)
+  status              Int      @db.TinyInt
+  order_by            Float    @db.Float
+  created_by          Int
+  updated_by          Int?
+  created_on          DateTime @default(now()) @db.DateTime(0)
+  updated_on          DateTime @default(now()) @db.DateTime(0)
+  stripe_payment_link String?  @db.VarChar(255)
+  is_production       Int?
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model migrations {
+  version BigInt
+
+  @@ignore
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model notes {
+  note_id         Int               @id @default(autoincrement())
+  exam_id         Int
+  subject_id      Int
+  topic_id        Int
+  level_id        Int
+  note_type       Int
+  note_title      String            @db.VarChar(500)
+  icon            String?           @db.VarChar(100)
+  icon_type       Int               @db.TinyInt
+  note            String            @db.MediumText
+  short_note      String            @db.MediumText
+  screenshot      String            @db.MediumText
+  is_free         Int               @db.TinyInt
+  status          Int               @default(1) @db.TinyInt
+  order_by        Float             @default(0) @db.Float
+  created_by      Int?
+  created_on      DateTime          @default(now()) @db.DateTime(0)
+  updated_by      Int?
+  updated_on      DateTime          @default(now()) @db.DateTime(0)
+  onProduction    Int               @default(0)
+  onStaging       Int               @default(0)
+  generation      Int               @default(1) @db.UnsignedInt
+  sub_topic_id    Int?
+  source_url      String?           @db.VarChar(150)
+  flashcard_deck  flashcard_deck[]
+  note_reviews    note_reviews[]
+  sub_topic       sub_topic?        @relation(fields: [sub_topic_id], references: [sub_topic_id], map: "fk_notes_sub_topic_id")
+  level           level             @relation(fields: [level_id], references: [level_id], onDelete: Cascade, onUpdate: NoAction, map: "notes_ibfk_1")
+  subject         subject           @relation(fields: [subject_id], references: [subject_id], onDelete: Cascade, onUpdate: NoAction, map: "notes_ibfk_2")
+  topic           topic             @relation(fields: [topic_id], references: [topic_id], onDelete: Cascade, onUpdate: NoAction, map: "notes_ibfk_3")
+  exam            exam              @relation(fields: [exam_id], references: [exam_id], onDelete: Cascade, onUpdate: NoAction, map: "notes_ibfk_4")
+  notes_questions notes_questions[]
+  quiz            quiz[]
+
+  @@index([exam_id, subject_id, topic_id, level_id], map: "exam_id")
+  @@index([level_id], map: "level_id")
+  @@index([subject_id], map: "subject_id")
+  @@index([topic_id], map: "topic_id")
+  @@index([sub_topic_id], map: "fk_notes_sub_topic_id")
+}
+
+model notes_progress {
+  id           Int      @id @default(autoincrement())
+  user_id      Int
+  asset_id     Int
+  topic_id     Int
+  total_pages  Int
+  current_page Int
+  created_on   DateTime @default(now()) @db.Timestamp(0)
+  updated_on   DateTime @default(now()) @db.Timestamp(0)
+}
+
+model notes_questions {
+  note_question_id          Int                        @id @default(autoincrement())
+  note_id                   Int
+  question_title            String                     @db.VarChar(255)
+  options                   String                     @db.Text
+  correct_answer            Int
+  answer_comment            String                     @db.VarChar(255)
+  note_page_number          Int
+  correct_answer_percentage Int
+  ai_corrections_count      Int                        @default(0)
+  notes                     notes                      @relation(fields: [note_id], references: [note_id], onDelete: NoAction, onUpdate: NoAction, map: "notes_questions_ibfk_1")
+  notes_questions_progress  notes_questions_progress[]
+  questions_correction_ai   questions_correction_ai[]
+  questions_report          questions_report[]
+
+  @@index([note_id], map: "note_id")
+}
+
+model notes_questions_failure {
+  id          Int     @id @default(autoincrement())
+  page_number Int
+  note_id     Int
+  reason      String? @db.Text
+}
+
+model notes_questions_progress {
+  note_question_progress_id Int             @id @default(autoincrement())
+  note_question_id          Int
+  user_id                   Int
+  option_selected           Int
+  is_correct                Int
+  notes_questions           notes_questions @relation(fields: [note_question_id], references: [note_question_id], onDelete: NoAction, onUpdate: NoAction, map: "notes_questions_progress_ibfk_1")
+  users                     users           @relation(fields: [user_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "notes_questions_progress_ibfk_2")
+
+  @@index([note_question_id], map: "note_question_id")
+  @@index([user_id], map: "user_id")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model options {
+  option_id    BigInt  @id @default(autoincrement()) @db.UnsignedBigInt
+  option_name  String? @unique(map: "option_name") @db.VarChar(64)
+  option_value String? @db.LongText
+  status       Int     @default(1)
+  order        Float   @db.Float
+
+  @@index([option_name], map: "option_name_2")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model pages {
+  page_id          Int       @id @default(autoincrement()) @db.UnsignedInt
+  title            String    @db.VarChar(150)
+  description      String    @db.LongText
+  meta_description String?   @db.Text
+  meta_content     String?   @db.Text
+  meta_keyword     String?   @db.Text
+  status           Boolean   @default(true)
+  created_at       DateTime? @db.Timestamp(0)
+  updated_at       DateTime? @db.Timestamp(0)
+}
+
+model premium_codes {
+  code_id     Int      @id @default(autoincrement())
+  code        String   @db.VarChar(255)
+  status      Int?     @default(0)
+  expiry_date DateTime @db.DateTime(0)
+  max_uses    Int
+  uses        Int?     @default(0)
+}
+
+model profile_details {
+  id                                                      Int           @id @default(autoincrement())
+  user_id                                                 Int
+  favourite_subject                                       String?       @db.VarChar(255)
+  school                                                  String?       @db.VarChar(255)
+  study_goal                                              String?       @db.VarChar(255)
+  university                                              String?       @db.VarChar(255)
+  hourly_study_goal                                       String?       @db.VarChar(255)
+  hardest_subject                                         String?       @db.VarChar(255)
+  school_id                                               Int?
+  student_type                                            Int?
+  schools                                                 schools?      @relation(fields: [school_id], references: [school_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_school_id")
+  student_type_profile_details_student_typeTostudent_type student_type? @relation("profile_details_student_typeTostudent_type", fields: [student_type], references: [student_type_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_student_type")
+  users                                                   users         @relation(fields: [user_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "profile_details_ibfk_1")
+
+  @@index([school_id], map: "fk_school_id")
+  @@index([student_type], map: "fk_student_type")
+  @@index([user_id], map: "user_id")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model question {
+  question_id             Int                          @id @default(autoincrement())
+  exam_id                 Int
+  subject_id              Int
+  topic_id                Int
+  level_id                Int
+  question                String                       @db.VarChar(100)
+  free_question           String                       @db.VarChar(100)
+  marking                 String                       @db.VarChar(100)
+  max_grade               String                       @db.VarChar(20)
+  max_time                String                       @db.VarChar(20)
+  is_free                 Int                          @db.TinyInt
+  order_by                Float                        @default(0) @db.Float
+  created_by              Int?
+  created_on              DateTime                     @default(now()) @db.DateTime(0)
+  updated_by              Int?
+  updated_on              DateTime                     @default(now()) @db.DateTime(0)
+  status                  Int                          @default(1) @db.TinyInt
+  question_year           Int?
+  paper_number            Int
+  question_number         Int
+  specification_type      question_specification_type? @default(Paper)
+  sub_topic_id            Int?
+  sub_topic               sub_topic?                   @relation(fields: [sub_topic_id], references: [sub_topic_id], map: "fk_question_sub_topic_id")
+  topic                   topic                        @relation(fields: [topic_id], references: [topic_id], onDelete: Cascade, onUpdate: NoAction, map: "question_ibfk_1")
+  level                   level                        @relation(fields: [level_id], references: [level_id], onDelete: Cascade, onUpdate: NoAction, map: "question_ibfk_2")
+  exam                    exam                         @relation(fields: [exam_id], references: [exam_id], onDelete: Cascade, onUpdate: NoAction, map: "question_ibfk_3")
+  subject                 subject                      @relation(fields: [subject_id], references: [subject_id], onDelete: Cascade, onUpdate: NoAction, map: "question_ibfk_4")
+  question_scanned_answer question_scanned_answer[]
+
+  @@index([exam_id, subject_id, level_id], map: "exam_id")
+  @@index([level_id], map: "level_id")
+  @@index([subject_id], map: "subject_id")
+  @@index([topic_id], map: "topic_id")
+  @@index([sub_topic_id], map: "fk_question_sub_topic_id")
+}
+
+model question_scanned_answer {
+  question_scanned_answer_id Int       @id @default(autoincrement())
+  grade                      Int
+  answer_img                 String    @db.VarChar(256)
+  what_was_right             String    @db.Text
+  what_could_be_improved     String    @db.Text
+  open_ai_response           String    @db.Text
+  question_id                Int
+  user_id                    Int
+  created_on                 DateTime? @default(now()) @db.DateTime(0)
+  users                      users     @relation(fields: [user_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "question_scanned_answer_ibfk_1")
+  question                   question  @relation(fields: [question_id], references: [question_id], onDelete: NoAction, onUpdate: NoAction, map: "question_scanned_answer_ibfk_2")
+
+  @@index([question_id], map: "question_id")
+  @@index([user_id], map: "user_id")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model quiz {
+  quiz_id        Int        @id @default(autoincrement())
+  title          String     @db.VarChar(100)
+  user_id        Int
+  subject_id     Int
+  topic_id       Int
+  examId         Int
+  questionIds    String?    @db.MediumText
+  duration       Int
+  quiz_mode      Int        @db.TinyInt
+  quiz_type      Int        @db.TinyInt
+  question_type  Int        @db.TinyInt
+  code           String     @db.VarChar(10)
+  created_on     DateTime   @default(now()) @db.DateTime(0)
+  source_note_id Int?
+  sub_topic_id   Int?
+  sub_topic      sub_topic? @relation(fields: [sub_topic_id], references: [sub_topic_id], map: "fk_quiz_sub_topic_id")
+  notes          notes?     @relation(fields: [source_note_id], references: [note_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_source_note_id")
+  topic          topic      @relation(fields: [topic_id], references: [topic_id], onDelete: NoAction, onUpdate: NoAction, map: "quiz_ibfk_1")
+  subject        subject    @relation(fields: [subject_id], references: [subject_id], onDelete: NoAction, onUpdate: NoAction, map: "quiz_ibfk_2")
+
+  @@index([user_id], map: "user_id")
+  @@index([source_note_id], map: "fk_source_note_id")
+  @@index([sub_topic_id], map: "fk_quiz_sub_topic_id")
+  @@index([subject_id], map: "subject_id")
+  @@index([topic_id], map: "topic_id")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model quizQuestionsTemp {
+  quizQuestionsId Int       @id @default(autoincrement())
+  examId          Int
+  subjectId       Int
+  topicId         Int
+  questionType    Int
+  question        String    @db.Text
+  option1         String    @db.Text
+  option2         String    @db.Text
+  option3         String    @db.Text
+  option4         String    @db.Text
+  answer          String    @db.Text
+  createdOn       DateTime  @default(now()) @db.DateTime(0)
+  updatedOn       DateTime? @db.DateTime(0)
+}
+
+model quiz_progress {
+  id                    Int      @id @default(autoincrement())
+  user_id               Int
+  asset_id              Int
+  topic_id              Int
+  total_questions       Int
+  correct_questions     Int
+  correct_questions_ids String   @db.VarChar(500)
+  wrong_questions_ids   String   @db.VarChar(500)
+  created_on            DateTime @default(now()) @db.Timestamp(0)
+  updated_on            DateTime @default(now()) @db.Timestamp(0)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model quizquestions {
+  quizQuestionsId         Int       @id @default(autoincrement())
+  examId                  Int
+  subject_id              Int
+  topicId                 Int
+  questionType            Int
+  question                String    @db.MediumText
+  options                 String    @db.VarChar(2000)
+  answer                  String    @db.MediumText
+  answerComment           String?   @db.VarChar(2000)
+  createdOn               DateTime  @default(now()) @db.DateTime(0)
+  updatedOn               DateTime? @db.DateTime(0)
+  source_note_page_number Int?
+  ai_corrections_count    Int       @default(0)
+}
+
+model referral_logs {
+  id              Int       @id @default(autoincrement())
+  referer_id      Int?
+  referral_code   String?   @db.VarChar(10)
+  referree_id     Int?
+  plan_id         Int?
+  referral_status String?   @db.VarChar(20)
+  paid_out        Boolean?
+  created_at      DateTime? @default(now()) @db.DateTime(0)
+}
+
+model schools {
+  school_id       Int               @id @default(autoincrement())
+  school_name     String            @db.VarChar(100)
+  country_code    String            @default("WW") @db.Char(2)
+  profile_details profile_details[]
+}
+
+model sessions {
+  s_id       Int      @id @default(autoincrement())
+  user_id    Int
+  duration   Int
+  url        String   @db.VarChar(255)
+  params     String   @db.VarChar(500)
+  created_on DateTime @default(now()) @db.DateTime(0)
+}
+
+model streak_goals {
+  streak_goal_id   Int    @id @default(autoincrement())
+  streak_goal_name String @db.VarChar(255)
+  streak_goal_time String @db.VarChar(255)
+}
+
+model student_type {
+  student_type_id                                            Int               @id @default(autoincrement())
+  student_type_name                                          String            @db.VarChar(150)
+  student_type_description                                   String?           @db.VarChar(255)
+  profile_details_profile_details_student_typeTostudent_type profile_details[] @relation("profile_details_student_typeTostudent_type")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model subject {
+  subject_id    Int           @id @default(autoincrement())
+  exam_id       Int
+  subject_title String        @db.VarChar(50)
+  icon          String        @db.VarChar(100)
+  subject_color String        @db.VarChar(50)
+  is_show       Int           @db.TinyInt
+  icon_type     Int           @db.TinyInt
+  order_by      Float         @default(0) @db.Float
+  status        Int           @db.TinyInt
+  created_by    Int?
+  created_on    DateTime      @default(now()) @db.DateTime(0)
+  updated_by    Int?
+  updated_on    DateTime      @default(now()) @db.DateTime(0)
+  exam_board_id Int?
+  subject_slug  String        @db.VarChar(150)
+  exam_papers   exam_papers[]
+  notes         notes[]
+  question      question[]
+  quiz          quiz[]
+  exam_board    exam_board?   @relation(fields: [exam_board_id], references: [exam_board_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_exam_board_id")
+  exam          exam          @relation(fields: [exam_id], references: [exam_id], onDelete: Cascade, onUpdate: NoAction, map: "subject_ibfk_1")
+  topic         topic[]
+  unit          unit[]
+
+  @@index([exam_id], map: "exam_id")
+  @@index([exam_board_id], map: "fk_exam_board_id")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model topic {
+  topic_id    Int         @id @default(autoincrement())
+  exam_id     Int
+  subject_id  Int
+  level_id    Int
+  topic_title String?     @db.VarChar(200)
+  icon        String?     @db.VarChar(100)
+  icon_type   Int         @db.TinyInt
+  order_by    Float       @default(0) @db.Float
+  created_by  Int?
+  created_on  DateTime    @default(now()) @db.DateTime(0)
+  updated_by  Int?
+  updated_on  DateTime    @default(now()) @db.DateTime(0)
+  topic_slug  String      @db.VarChar(150)
+  unit_id     Int?
+  notes       notes[]
+  question    question[]
+  quiz        quiz[]
+  sub_topic   sub_topic[]
+  unit        unit?       @relation(fields: [unit_id], references: [unit_id], map: "fk_unit_id")
+  exam        exam        @relation(fields: [exam_id], references: [exam_id], onDelete: Cascade, onUpdate: NoAction, map: "topic_ibfk_1")
+  level       level       @relation(fields: [level_id], references: [level_id], onDelete: Cascade, onUpdate: NoAction, map: "topic_ibfk_2")
+  subject     subject     @relation(fields: [subject_id], references: [subject_id], onDelete: Cascade, onUpdate: NoAction, map: "topic_ibfk_3")
+
+  @@index([exam_id, subject_id, level_id], map: "exam_id")
+  @@index([level_id], map: "level_id")
+  @@index([subject_id], map: "subject_id")
+  @@index([unit_id], map: "fk_unit_id")
+}
+
+model transaction {
+  transaction_id      Int       @id @default(autoincrement())
+  user_id             Int
+  secretKey           String?   @db.VarChar(50)
+  membership_id       Int
+  transaction_type    Int
+  amount              Int
+  status              String    @db.VarChar(20)
+  transaction_details String    @db.MediumText
+  user_plan_details   String?   @db.MediumText
+  txn_id              String    @db.VarChar(50)
+  subscription_id     String    @db.VarChar(50)
+  coupon_code         String?   @db.VarChar(20)
+  transaction_date    DateTime  @db.DateTime(0)
+  cancelled_date      DateTime? @db.DateTime(0)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model user_exam {
+  user_exam_id  Int      @id @default(autoincrement())
+  user_id       Int
+  exam_id       Int
+  subject_id    Int
+  level_id      Int
+  topic_id      Int
+  question_id   Int
+  exam_date     DateTime @db.Date
+  actual_time   String   @db.VarChar(10)
+  solved_time   String   @db.VarChar(10)
+  actual_mark   String   @db.VarChar(10)
+  solved_mark   String   @db.VarChar(10)
+  start_time    DateTime @db.DateTime(0)
+  end_time      DateTime @db.DateTime(0)
+  question_data String   @db.MediumText
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model user_plan {
+  user_plan_id              Int                       @id @default(autoincrement())
+  user_id                   Int
+  membership_id             Int
+  membership_start_date     DateTime                  @db.DateTime(0)
+  membership_expiry_date    DateTime                  @db.DateTime(0)
+  membership_cancelled_date DateTime?                 @db.DateTime(0)
+  txn_id                    String                    @db.VarChar(50)
+  subscription_id           String                    @db.VarChar(50)
+  updated_on                DateTime                  @default(now()) @db.DateTime(0)
+  created_on                DateTime                  @default(now()) @db.DateTime(0)
+  status                    String                    @db.VarChar(20)
+  billing_service           user_plan_billing_service @default(STRIPE)
+  rvt_status                Int                       @default(0) @db.UnsignedInt
+}
+
+model user_pwa_data {
+  user_id       Int
+  device_id     String   @id @db.VarChar(255)
+  installed_pwa Int?
+  fcm_key       String?  @db.VarChar(255)
+  last_updated  DateTime @default(now()) @db.Timestamp(0)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model user_quiz {
+  uq_id              Int       @id @default(autoincrement())
+  user_id            Int
+  quiz_id            Int
+  email              String    @db.VarChar(100)
+  actual_question_id String    @db.MediumText
+  question_id        String    @db.MediumText
+  answer             String    @db.MediumText
+  marked             String    @db.MediumText
+  strike             String    @db.MediumText
+  time_expend        Int
+  is_pause           Int       @db.TinyInt
+  current_question   Int
+  status             Int       @db.TinyInt
+  submission_date    DateTime? @db.DateTime(0)
+
+  @@index([user_id, quiz_id], map: "user_id")
+  @@index([quiz_id], map: "user_quiz_ibfk_2")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model user_streak {
+  id         Int       @id @default(autoincrement()) @db.UnsignedInt
+  user_id    Int
+  count      Int
+  created_on DateTime? @default(now()) @db.DateTime(0)
+  updated_on DateTime? @default(now()) @db.DateTime(0)
+  users      users     @relation(fields: [user_id], references: [user_id], onDelete: Cascade, onUpdate: NoAction, map: "user_streak_ibfk_1")
+
+  @@index([user_id], map: "user_streak_ibfk_1")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model users {
+  user_id                                 Int                        @id @default(autoincrement())
+  user_role                               Int                        @db.TinyInt
+  parent_user                             Int
+  parent_email                            String                     @db.VarChar(255)
+  secretKey                               String?                    @db.VarChar(50)
+  name                                    String                     @db.VarChar(50)
+  contact                                 String                     @db.VarChar(20)
+  email                                   String                     @db.VarChar(50)
+  school                                  String                     @db.VarChar(100)
+  hardest_subject                         String?                    @db.VarChar(255)
+  exam_id                                 Int?
+  exam_year                               Int?
+  subject_id                              String?                    @db.VarChar(2000)
+  password                                String                     @db.VarChar(200)
+  google_id                               String                     @db.VarChar(50)
+  facebook_id                             String                     @db.VarChar(50)
+  apple_id                                String?                    @db.VarChar(42)
+  referral_code                           String                     @db.VarChar(10)
+  salt                                    String                     @db.VarChar(20)
+  status                                  Int                        @db.TinyInt
+  new_password_key                        String                     @db.VarChar(50)
+  verify_key                              String                     @db.VarChar(20)
+  last_login                              DateTime                   @default(now()) @db.DateTime(0)
+  login_status                            Int
+  session_count                           Int                        @default(1)
+  ip_address                              String                     @db.VarChar(20)
+  cart_expiry                             DateTime?                  @db.DateTime(0)
+  created_by                              Int?
+  created_on                              DateTime                   @default(now()) @db.DateTime(0)
+  updated_by                              Int?
+  updated_on                              DateTime                   @default(now()) @db.DateTime(0)
+  country_code                            String                     @default("WW") @db.Char(2)
+  is_app_popup_dismissed                  Int                        @default(0) @db.TinyInt
+  parents_phone_number                    String?                    @db.VarChar(25)
+  free_scan_your_answer_used_on           DateTime?                  @db.DateTime(0)
+  print_count                             Int                        @default(0)
+  upgrade_source                          String?                    @db.VarChar(256)
+  signup_source_id                        Int?
+  cancellation                            cancellation[]
+  exam_board_exam_board_created_byTousers exam_board[]               @relation("exam_board_created_byTousers")
+  exam_board_exam_board_updated_byTousers exam_board[]               @relation("exam_board_updated_byTousers")
+  exam_papers_progress                    exam_papers_progress[]
+  homework                                homework[]
+  note_reviews                            note_reviews[]
+  notes_questions_progress                notes_questions_progress[]
+  profile_details                         profile_details[]
+  question_scanned_answer                 question_scanned_answer[]
+  questions_report                        questions_report[]
+  user_streak                             user_streak[]
+  countries                               countries                  @relation(fields: [country_code], references: [country_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_country")
+  signup_sources                          signup_sources?            @relation(fields: [signup_source_id], references: [signup_source_id], map: "fk_signup_source_id")
+  exam                                    exam?                      @relation(fields: [exam_id], references: [exam_id], onDelete: NoAction, onUpdate: NoAction, map: "users_ibfk_1")
+
+  @@index([exam_id], map: "exam_id")
+  @@index([country_code], map: "fk_country")
+  @@index([signup_source_id], map: "fk_signup_source_id")
+}
+
+model Session {
+  id         String @id @db.VarChar(128)
+  ip_address String @db.VarChar(45)
+  timestamp  Int    @default(0) @db.UnsignedInt
+  data       Bytes  @db.Blob
+
+  @@index([timestamp], map: "timestamp")
+  @@map("ci_sessions")
+}
+
+model ai_prompt {
+  ai_prompt_id    Int       @id @default(autoincrement())
+  title           String    @db.VarChar(255)
+  category        String    @db.VarChar(100)
+  slug            String    @db.VarChar(255)
+  prompt          String    @db.Text
+  response_prompt String    @db.Text
+  created_on      DateTime? @default(now()) @db.DateTime(0)
+}
+
+model exam_papers_progress {
+  id             Int         @id @default(autoincrement())
+  user_id        Int
+  exam_papers_id Int
+  created_on     DateTime?   @default(now()) @db.DateTime(0)
+  updated_on     DateTime?   @default(now()) @db.DateTime(0)
+  users          users       @relation(fields: [user_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "exam_papers_progress_ibfk_1")
+  exam_papers    exam_papers @relation(fields: [exam_papers_id], references: [exam_papers_id], onDelete: NoAction, onUpdate: NoAction, map: "exam_papers_progress_ibfk_2")
+
+  @@index([exam_papers_id], map: "exam_papers_id")
+  @@index([user_id], map: "user_id")
+}
+
+model flashcard_card {
+  flashcard_card_id   Int                   @id @default(autoincrement()) @db.UnsignedInt
+  front_content       String                @db.VarChar(255)
+  back_content        String                @db.VarChar(255)
+  flashcard_deck_id   Int                   @db.UnsignedInt
+  created_on          DateTime?             @default(now()) @db.DateTime(0)
+  updated_on          DateTime?             @default(now()) @db.DateTime(0)
+  flashcard_deck      flashcard_deck        @relation(fields: [flashcard_deck_id], references: [flashcard_deck_id], onDelete: Cascade, onUpdate: NoAction, map: "flashcard_card_ibfk_1")
+  flashcard_study_log flashcard_study_log[]
+  questions_report    questions_report[]
+
+  @@index([flashcard_deck_id], map: "flashcard_deck_id")
+}
+
+model flashcard_deck {
+  flashcard_deck_id    Int                  @id @default(autoincrement()) @db.UnsignedInt
+  flashcard_deck_title String               @db.VarChar(255)
+  source_note_id       Int?
+  subject_id           Int
+  topic_id             Int
+  exam_id              Int
+  created_on           DateTime?            @default(now()) @db.DateTime(0)
+  updated_on           DateTime?            @default(now()) @db.DateTime(0)
+  sub_topic_id         Int?
+  flashcard_card       flashcard_card[]
+  sub_topic            sub_topic?           @relation(fields: [sub_topic_id], references: [sub_topic_id], map: "fk_flashcard_deck_sub_topic_id")
+  notes                notes?               @relation(fields: [source_note_id], references: [note_id], onDelete: Cascade, onUpdate: NoAction, map: "flashcard_deck_ibfk_1")
+  flashcard_progress   flashcard_progress[]
+
+  @@index([source_note_id], map: "source_note_id")
+  @@index([sub_topic_id], map: "fk_flashcard_deck_sub_topic_id")
+}
+
+model flashcard_progress {
+  id                      Int            @id @default(autoincrement())
+  user_id                 Int
+  topic_id                Int
+  flashcard_deck_id       Int            @db.UnsignedInt
+  total_cards             Int
+  remembered_cards        Int
+  not_remembered_cards    Int
+  remembered_card_ids     String         @db.VarChar(500)
+  not_remembered_card_ids String         @db.VarChar(500)
+  created_on              DateTime?      @default(now()) @db.DateTime(0)
+  updated_on              DateTime?      @default(now()) @db.DateTime(0)
+  flashcard_deck          flashcard_deck @relation(fields: [flashcard_deck_id], references: [flashcard_deck_id], onDelete: Cascade, onUpdate: NoAction, map: "flashcard_progress_ibfk_1")
+
+  @@index([flashcard_deck_id], map: "flashcard_deck_id")
+}
+
+model flashcard_study_log {
+  flashcard_study_log_id Int            @id @default(autoincrement()) @db.UnsignedInt
+  flashcard_card_id      Int            @db.UnsignedInt
+  rep                    Int            @default(0)
+  interval               Int            @default(1)
+  ease_factor            Float          @default(2.5) @db.Float
+  next_review_date       DateTime       @db.Date
+  last_review_date       DateTime       @db.Date
+  quality                Boolean        @default(false)
+  user_id                Int
+  flashcard_card         flashcard_card @relation(fields: [flashcard_card_id], references: [flashcard_card_id], onDelete: Cascade, onUpdate: NoAction, map: "flashcard_study_log_ibfk_1")
+
+  @@index([flashcard_card_id], map: "flashcard_card_id")
+}
+
+model note_review_questions {
+  note_review_question_id Int            @id @default(autoincrement()) @db.UnsignedInt
+  note_review_question    String         @db.Text
+  note_reviews            note_reviews[]
+}
+
+model note_reviews {
+  note_review_id          Int                   @id @default(autoincrement())
+  note_id                 Int
+  user_id                 Int
+  note_review_question_id Int                   @db.UnsignedInt
+  rating                  Int
+  comment                 String?               @db.Text
+  generation              Int                   @db.UnsignedInt
+  notes                   notes                 @relation(fields: [note_id], references: [note_id], onDelete: NoAction, onUpdate: NoAction, map: "note_reviews_ibfk_1")
+  users                   users                 @relation(fields: [user_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "note_reviews_ibfk_2")
+  note_review_questions   note_review_questions @relation(fields: [note_review_question_id], references: [note_review_question_id], onDelete: NoAction, onUpdate: NoAction, map: "note_reviews_ibfk_3")
+
+  @@index([note_id], map: "note_id")
+  @@index([note_review_question_id], map: "note_review_question_id")
+  @@index([user_id], map: "user_id")
+}
+
+model questions_correction_ai {
+  question_correction_id  Int                             @id @default(autoincrement())
+  quiz_question_id        Int?
+  note_question_id        Int?
+  status                  questions_correction_ai_status?
+  original_title          String?                         @db.VarChar(255)
+  original_options        String?                         @db.Text
+  original_correct_answer String?                         @db.Text
+  original_explanation    String?                         @db.Text
+  revised_title           String?                         @db.VarChar(255)
+  revised_options         String?                         @db.Text
+  revised_correct_answer  String?                         @db.Text
+  revised_explanation     String?                         @db.Text
+  correction_explanation  String?                         @db.Text
+  created_on              DateTime
+  reports_count           Int?                         
+  notes_questions         notes_questions?                @relation(fields: [note_question_id], references: [note_question_id], onDelete: NoAction, onUpdate: NoAction, map: "questions_correction_ai_ibfk_1")
+  questions_report        questions_report[]
+
+  @@index([note_question_id], map: "note_question_id")
+}
+
+model questions_report {
+  id                      Int                      @id @default(autoincrement())
+  reason                  String?                  @db.Text
+  selected_option         String?                  @db.VarChar(255)
+  reported_by             Int
+  created_on              DateTime                 @db.DateTime(0)
+  quiz_question_id        Int?
+  note_question_id        Int?
+  question_correction_id  Int?
+  flashcard_card_id       Int?                     @db.UnsignedInt
+  flashcard_card          flashcard_card?          @relation(fields: [flashcard_card_id], references: [flashcard_card_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_flashcard_card_id")
+  notes_questions         notes_questions?         @relation(fields: [note_question_id], references: [note_question_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_note_question_id")
+  questions_correction_ai questions_correction_ai? @relation(fields: [question_correction_id], references: [question_correction_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_question_correction_id")
+  users                   users                    @relation(fields: [reported_by], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "questions_report_ibfk_1")
+
+  @@index([note_question_id], map: "fk_note_question_id")
+  @@index([question_correction_id], map: "fk_question_correction_id")
+  @@index([reported_by], map: "reported_by")
+  @@index([flashcard_card_id], map: "fk_flashcard_card_id")
+}
+
+model quiz_questions_failure {
+  id          Int     @id @default(autoincrement())
+  page_number Int
+  note_id     Int
+  reason      String? @db.Text
+}
+
+model education_level {
+  education_level_id   Int            @id @default(autoincrement())
+  education_level_name String         @db.VarChar(255)
+  education_level_icon String?        @db.VarChar(255)
+  cancellation         cancellation[]
+}
+
+model signup_sources {
+  signup_source_id    Int       @id @default(autoincrement())
+  source_name         String    @db.VarChar(255)
+  order_by            Int       @default(1)
+  is_supported        Boolean   @default(false)
+  created_by          Int?
+  created_on          DateTime? @default(now()) @db.DateTime(0)
+  updated_by          Int?
+  updated_on          DateTime? @default(now()) @db.DateTime(0)
+  signup_source_image String    @db.VarChar(255)
+  users               users[]
+}
+
+model sub_topic {
+  sub_topic_id    Int              @id @default(autoincrement())
+  sub_topic_title String           @db.VarChar(100)
+  topic_id        Int
+  icon            String?          @db.VarChar(100)
+  order_by        Float            @default(0) @db.Float
+  created_by      Int?
+  created_on      DateTime?        @default(now()) @db.DateTime(0)
+  updated_by      Int?
+  updated_on      DateTime?        @default(now()) @db.DateTime(0)
+  sub_topic_slug  String           @db.VarChar(100)
+  flashcard_deck  flashcard_deck[]
+  notes           notes[]
+  question        question[]
+  quiz            quiz[]
+  topic           topic            @relation(fields: [topic_id], references: [topic_id], onDelete: NoAction, onUpdate: NoAction, map: "sub_topic_ibfk_1")
+
+  @@index([topic_id], map: "topic_id")
+}
+
+model unit {
+  unit_id    Int       @id @default(autoincrement())
+  unit_title String    @db.VarChar(100)
+  subject_id Int
+  icon       String?   @db.VarChar(100)
+  order_by   Float     @default(0) @db.Float
+  created_by Int?
+  created_on DateTime? @default(now()) @db.DateTime(0)
+  updated_by Int?
+  updated_on DateTime? @default(now()) @db.DateTime(0)
+  unit_slug  String    @db.VarChar(100)
+  topic      topic[]
+  subject    subject   @relation(fields: [subject_id], references: [subject_id], onDelete: NoAction, onUpdate: NoAction, map: "unit_ibfk_1")
+
+  @@index([subject_id], map: "subject_id")
+}
+
+model university_course_area {
+  university_course_area_id   Int            @id @default(autoincrement())
+  university_course_area_name String         @db.VarChar(255)
+  university_course_area_icon String?        @db.VarChar(255)
+  cancellation                cancellation[]
+}
+
+model cancellation {
+  cancellation_id           Int                              @id @default(autoincrement())
+  user_id                   Int
+  education_level_id        Int?
+  university_course_area_id Int?
+  product_improvement_id    Int?
+  product_rating_id         Int?
+  cancellation_reason_id    Int?
+  cancellation_status       String
+  education_level           education_level?                 @relation(fields: [education_level_id], references: [education_level_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_cancellation_education_level_id")
+  product_improvement       product_improvement?             @relation(fields: [product_improvement_id], references: [product_improvement_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_cancellation_product_improvement_id")
+  product_rating            product_rating?                  @relation(fields: [product_rating_id], references: [product_rating_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_cancellation_product_rating_id")
+  cancellation_reason       cancellation_reason?             @relation(fields: [cancellation_reason_id], references: [cancellation_reason_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_cancellation_reason_id")
+  university_course_area    university_course_area?          @relation(fields: [university_course_area_id], references: [university_course_area_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_cancellation_university_course_area_id")
+  users                     users                            @relation(fields: [user_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_cancellation_user_id")
+
+  @@index([education_level_id], map: "fk_cancellation_education_level_id")
+  @@index([product_improvement_id], map: "fk_cancellation_product_improvement_id")
+  @@index([product_rating_id], map: "fk_cancellation_product_rating_id")
+  @@index([cancellation_reason_id], map: "fk_cancellation_reason_id")
+  @@index([university_course_area_id], map: "fk_cancellation_university_course_area_id")
+  @@index([user_id], map: "fk_cancellation_user_id")
+}
+
+model cancellation_reason {
+  cancellation_reason_id   Int            @id @default(autoincrement())
+  cancellation_reason_name String         @db.VarChar(255)
+  cancellation_reason_icon String?        @db.VarChar(255)
+  cancellation             cancellation[]
+}
+
+model product_improvement {
+  product_improvement_id   Int            @id @default(autoincrement())
+  product_improvement_name String         @db.VarChar(255)
+  product_improvement_icon String?        @db.VarChar(255)
+  cancellation             cancellation[]
+}
+
+model product_rating {
+  product_rating_id   Int            @id @default(autoincrement())
+  product_rating_name String         @db.VarChar(255)
+  product_rating_icon String?        @db.VarChar(255)
+  cancellation        cancellation[]
+}
+
+model essay_progress {
+  id           Int      @id @default(autoincrement())
+  user_id      Int
+  asset_id     Int
+  topic_id     Int
+  total_pages  Int
+  current_page Int
+  created_on   DateTime @default(now()) @db.Timestamp(0)
+  updated_on   DateTime @default(now()) @db.Timestamp(0)
+}
+
+model paypal_temp_data {
+  id      Int      @id @default(autoincrement())
+  data    String   @db.MediumText
+  type    Int      @db.TinyInt
+  created DateTime @db.DateTime(0)
+}
+
+enum user_plan_billing_service {
+  STRIPE
+  PAYPAL
+  APPLE
+  GOOGLE
+}
+
+enum exam_papers_specification_type {
+  Old
+  New
+  Specimen
+  Mock
+  Sample
+}
+
+enum question_specification_type {
+  Old
+  New
+  Specimen
+  Mock
+  Sample
+  Paper
+}
+
+enum questions_correction_ai_status {
+  Incorrect
+  Correct
+  Reviewed
+}
+
+enum cancellation_cancellation_status {
+  Paused
+  Completed
+  Discount
+}

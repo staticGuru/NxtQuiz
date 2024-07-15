@@ -1,0 +1,340 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-start-rgb: 214, 219, 220;
+  --background-end-rgb: 255, 255, 255;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --foreground-rgb: 255, 255, 255;
+    --background-start-rgb: 0, 0, 0;
+    --background-end-rgb: 0, 0, 0;
+  }
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  font-family: Inter;
+  background: linear-gradient(
+      to bottom,
+      transparent,
+      rgb(var(--background-end-rgb))
+    )
+    rgb(var(--background-start-rgb));
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+/* Global CSS */
+.flex {
+  display: flex;
+}
+
+/* Global CSS */
+.flex {
+  display: flex;
+}
+
+/* Define width classes for different breakpoints */
+/* Extra small devices (portrait phones, less than 600px) */
+.w-xs-1-12 {
+  width: 8.333333%;
+}
+.w-xs-2-12 {
+  width: 16.666667%;
+}
+.w-xs-3-12 {
+  width: 25%;
+}
+.w-xs-4-12 {
+  width: 33.333333%;
+}
+.w-xs-5-12 {
+  width: 41.666667%;
+}
+.w-xs-6-12 {
+  width: 50%;
+}
+.w-xs-7-12 {
+  width: 58.333333%;
+}
+.w-xs-8-12 {
+  width: 66.666667%;
+}
+.w-xs-9-12 {
+  width: 75%;
+}
+.w-xs-10-12 {
+  width: 83.333333%;
+}
+.w-xs-11-12 {
+  width: 91.666667%;
+}
+.w-xs-12-12 {
+  width: 100%;
+}
+
+/* Small devices (landscape phones, 600px and up) */
+@media (min-width: 600px) {
+  .w-sm-1-12 {
+    width: 8.333333%;
+  }
+  .w-sm-2-12 {
+    width: 16.666667%;
+  }
+  .w-sm-3-12 {
+    width: 25%;
+  }
+  .w-sm-4-12 {
+    width: 33.333333%;
+  }
+  .w-sm-5-12 {
+    width: 41.666667%;
+  }
+  .w-sm-6-12 {
+    width: 50%;
+  }
+  .w-sm-7-12 {
+    width: 58.333333%;
+  }
+  .w-sm-8-12 {
+    width: 66.666667%;
+  }
+  .w-sm-9-12 {
+    width: 75%;
+  }
+  .w-sm-10-12 {
+    width: 83.333333%;
+  }
+  .w-sm-11-12 {
+    width: 91.666667%;
+  }
+  .w-sm-12-12 {
+    width: 100%;
+  }
+}
+
+/* Medium devices (tablets, 960px and up) */
+@media (min-width: 960px) {
+  .w-md-1-12 {
+    width: 8.333333%;
+  }
+  .w-md-2-12 {
+    width: 16.666667%;
+  }
+  .w-md-3-12 {
+    width: 25%;
+  }
+  .w-md-4-12 {
+    width: 33.333333%;
+  }
+  .w-md-5-12 {
+    width: 41.666667%;
+  }
+  .w-md-6-12 {
+    width: 50%;
+  }
+  .w-md-7-12 {
+    width: 58.333333%;
+  }
+  .w-md-8-12 {
+    width: 66.666667%;
+  }
+  .w-md-9-12 {
+    width: 75%;
+  }
+  .w-md-10-12 {
+    width: 83.333333%;
+  }
+  .w-md-11-12 {
+    width: 91.666667%;
+  }
+  .w-md-12-12 {
+    width: 100%;
+  }
+}
+
+/* Large devices (desktops, 1280px and up) */
+@media (min-width: 1280px) {
+  .w-lg-1-12 {
+    width: 8.333333%;
+  }
+  .w-lg-2-12 {
+    width: 16.666667%;
+  }
+  .w-lg-3-12 {
+    width: 25%;
+  }
+  .w-lg-4-12 {
+    width: 33.333333%;
+  }
+  .w-lg-5-12 {
+    width: 41.666667%;
+  }
+  .w-lg-6-12 {
+    width: 50%;
+  }
+  .w-lg-7-12 {
+    width: 58.333333%;
+  }
+  .w-lg-8-12 {
+    width: 66.666667%;
+  }
+  .w-lg-9-12 {
+    width: 75%;
+  }
+  .w-lg-10-12 {
+    width: 83.333333%;
+  }
+  .w-lg-11-12 {
+    width: 91.666667%;
+  }
+  .w-lg-12-12 {
+    width: 100%;
+  }
+}
+
+/* Extra large devices (large desktops, 1920px and up) */
+@media (min-width: 1920px) {
+  .w-xl-1-12 {
+    width: 8.333333%;
+  }
+  .w-xl-2-12 {
+    width: 16.666667%;
+  }
+  .w-xl-3-12 {
+    width: 25%;
+  }
+  .w-xl-4-12 {
+    width: 33.333333%;
+  }
+  .w-xl-5-12 {
+    width: 41.666667%;
+  }
+  .w-xl-6-12 {
+    width: 50%;
+  }
+  .w-xl-7-12 {
+    width: 58.333333%;
+  }
+  .w-xl-8-12 {
+    width: 66.666667%;
+  }
+  .w-xl-9-12 {
+    width: 75%;
+  }
+  .w-xl-10-12 {
+    width: 83.333333%;
+  }
+  .w-xl-11-12 {
+    width: 91.666667%;
+  }
+  .w-xl-12-12 {
+    width: 100%;
+  }
+}
+
+.button-filled-color {
+  background-color: #1e7dfa;
+}
+
+.button-filled-text {
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.button-outlined-color {
+  background-color: #f4f9ff;
+}
+
+.button-outlined-text {
+  color: #1e7dfa;
+  font-weight: 600;
+}
+
+.speech-bubble:before {
+  content: '';
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  background-color: #ffffff;
+  transform: rotate(45deg);
+  top: 10px;
+  left: -10px;
+  z-index: -1;
+}
+
+.elephant-speech-bubble {
+  height: 130px;
+  width: 130px;
+}
+
+path {
+  transition: all ease 0.5s;
+}
+
+button,
+input,
+textarea,
+button:focus,
+input:focus,
+textarea:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  width: 0px;
+}
+
+/* Track */
+.hide-scrollbar::-webkit-scrollbar-track {
+  background: #fff;
+}
+
+/* Handle */
+.hide-scrollbar::-webkit-scrollbar-thumb {
+  background: #fff;
+}
+
+/* Handle on hover */
+.hide-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #fff;
+}
+
+.show-after-500 {
+  visibility: hidden;
+
+  animation: 0.5s ease-out 0s 1 show-after-500-animation;
+  opacity: 0;
+  animation-fill-mode: forwards;
+  animation-delay: 1s;
+}
+@keyframes show-after-500-animation {
+  from {
+    opacity: 0;
+    visibility: hidden;
+  }
+  to {
+    opacity: 1;
+    visibility: visible;
+  }
+}
+
+/* Use this for debugging overflows */
+/* * {
+  outline: 1px solid #f00 !important;
+} */
+
+/* Remove tap highlight on mobiles */
+button {
+  -webkit-tap-highlight-color: transparent;
+}

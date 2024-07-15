@@ -1,0 +1,35 @@
+export enum EventTrackingTypesEnum {
+  SIGNUP_STARTED = 'Sign Up Started',
+  EXAM_SELECTED = 'Exam Selected',
+  SUBJECTS_SELECTED = 'Subjects Selected',
+  SIGNUP_SOURCE_SELECTED = 'Sign Up Source Selected',
+  SIGNUP_COMPLETED = 'Signed Up',
+  LOGIN_COMPLETED = 'Login Completed',
+
+  // Onboarding Events
+  STUDYFLOW_STARTED = 'Studyflow Started',
+  STUDYFLOW_COMPLETED = 'Studyflow Completed',
+  ONBOARDING_STUDENT_TYPE_SELECTED = 'Onboarding Student Type Selected',
+  ONBOARDING_YEAR_SELECTED = 'Onboarding Year Selected',
+  ONBOARDING_SCHOOL_SELECTED = 'Onboarding School Selected',
+  ONBOARDING_PARENT_DETAILS_SUBMITTED = 'Onboarding Parent Details Submitted',
+  ONBOARDING_COMPLETED = 'Onboarding Completed',
+
+  // Activation & Usage Events
+  PAGE_VISIT = 'Page Visit',
+  PROFILE_COMPLETION = 'Profile Completion',
+  PRINT_CONTENT = 'Print Content',
+  FEATURE_STARTED = 'Feature Started',
+  FEATURE_COMPLETED = 'Feature Completed',
+  TRIAL_STARTED = 'Trial Started',
+  SUBSCRIBED = 'Subscribed',
+  PLAN_CANCELLED = 'Plan Cancelled',
+  STUDY_UNITS_PER_USER = 'Study Units Per User',
+  CONTACT_SUBMITTED = 'Contact Submitted',
+  CONTENT_REPORTED = 'Content Reported',
+  STREAK_STATUS = 'Streak Status',
+  REFERRAL_CLICKED = 'Referral Clicked',
+  CONTENT_RATED = 'Content Rated',
+  POPUP_OPENED = 'Popup Opened',
+  POPUP_ACTION = 'Popup Action',
+}

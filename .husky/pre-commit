@@ -1,0 +1,4 @@
+pnpm backend:test
+pnpm validate-branch-name
+cd backend && pnpm lint && pnpm prisma generate && pnpm build
+cd ../frontend && pnpm lint && pnpm build

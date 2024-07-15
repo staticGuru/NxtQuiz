@@ -1,0 +1,5 @@
+export enum CouponCode {
+  SUMMERFREE = 'SUMMERFREE',
+  FREEMONTH = 'FREEMONTH',
+  FIFTYOFF = 'FIFTYOFF',
+}

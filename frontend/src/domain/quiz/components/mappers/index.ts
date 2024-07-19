@@ -1,9 +1,18 @@
 import { Question } from '@frontend/common/components/quiz/types';
 
-export const mapQuizDataToQuestion = (question: any): Question => ({
-  question: question.question,
-  answers: question.options.split(','),
-  correctAnswer: parseInt(question.answer, 10) - 1, // convert to zero-based index
-  correctAnswerDetail: question.answerComment,
-  difficulty: 'regular',
-});
+export const mapQuizQuestions = (quiz): Question[] => {
+  const questions = quiz.questions;
+  if (!questions.length) return [];
+
+  return questions.map((item) => {
+    const options = item.options.split(',');
+    return {
+      id: item.quizQuestionsId,
+      question: item.question,
+      answers: options,
+      correctAnswer: parseInt(item.answer),
+      correctAnswerDetail: item.answerComment,
+      difficulty: 'regular', // TODO: need to check with questionType
+    };
+  });
+};

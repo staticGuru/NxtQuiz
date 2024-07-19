@@ -42,6 +42,10 @@ import { TopicRepository } from '@backend/domain/topic/repositories/topic-reposi
 import { PrismaTopicRepository } from './prisma/repositories/prisma-topic-repository';
 import { UserStreakRepository } from '@backend/domain/streak/repositories/user-streak-repository';
 import { PrismaUserStreakRepository } from './prisma/repositories/prisma-user-streak-repository';
+import { PrismaQuizRepository } from './prisma/repositories/prisma-quiz.repository';
+import { QuizRepository } from '@backend/domain/quiz/repositories/quiz-repository';
+import { PrismaQuizProgressRepository } from './prisma/repositories/prisma-quiz-progress.repository';
+import { QuizProgressRepository } from '@backend/domain/quiz/repositories/quiz-progress-repository';
 
 @Module({
   providers: [
@@ -130,11 +134,21 @@ import { PrismaUserStreakRepository } from './prisma/repositories/prisma-user-st
       provide: UserStreakRepository,
       useClass: PrismaUserStreakRepository,
     },
+    {
+      provide: QuizRepository,
+      useClass: PrismaQuizRepository,
+    },
+    {
+      provide: QuizProgressRepository,
+      useClass: PrismaQuizProgressRepository,
+    },
   ],
   exports: [
     PrismaService,
     AuthSessionRepository,
     NoteRepository,
+    QuizRepository,
+    QuizProgressRepository,
     UsersRepository,
     CountryRepository,
     ExamYearRepository,

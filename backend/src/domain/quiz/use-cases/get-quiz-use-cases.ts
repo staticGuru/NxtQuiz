@@ -8,6 +8,9 @@ export class GetQuizUseCase {
 
   async execute(id: number): Promise<Quiz | null> {
     const response = await this.quizRepository.findById(id);
+    if (!response) {
+      throw new Error('Quiz not found');
+    }
     return response;
   }
 }

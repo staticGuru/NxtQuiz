@@ -8,8 +8,7 @@ import {
   SubmitQuizPayload,
   SubmitQuizResponse,
 } from '@frontend/common/components/quiz/types';
-
-import { mapQuizQuestions } from '../mappers';
+import { mapQuizQuestions } from '../components/mappers';
 
 export const useFetchQuizById = (quizId: number) => {
   return useQuery<any, Error>({

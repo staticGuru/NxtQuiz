@@ -24,6 +24,11 @@ type QuizViewProps = {
   onSubmit?: (data: any) => void; // Optional function to handle submitting the quiz
 };
 
+type QuizProgressProps = {
+  correctAnswers: number[];
+  wrongAnswers: number[];
+};
+
 export const QuizView = ({
   embeddedQuizView,
   headerType,
@@ -44,7 +49,10 @@ export const QuizView = ({
   // State for the selected answer index
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
   // State for the total number of correct answers
-  const [totalCorrectAnswers, setTotalCorrectAnswers] = useState<number>(0);
+  const [quizProgress, setQuizProgress] = useState<QuizProgressProps>({
+    correctAnswers: [],
+    wrongAnswers: [],
+  });
   // State for the progress percentage
   const [progress, setProgress] = useState<number>(0);
   // State for the duration of the quiz
@@ -80,9 +88,16 @@ export const QuizView = ({
       selectedAnswer === currentQuestion.correctAnswer
     ) {
       setCurrentState(ANSWER_STATES.RIGHT);
-      setTotalCorrectAnswers((prev) => prev + 1);
+      setQuizProgress((prev) => ({
+        ...prev,
+        correctAnswers: [...prev.correctAnswers, currentQuestion.id],
+      }));
     } else {
       setCurrentState(ANSWER_STATES.WRONG);
+      setQuizProgress((prev) => ({
+        ...prev,
+        wrongAnswers: [...prev.wrongAnswers, currentQuestion.id],
+      }));
     }
 
     // Update progress when an answer is checked
@@ -118,7 +133,9 @@ export const QuizView = ({
 
       // If last question, navigate to quiz completed screen with score
       if (currentQuestionNumber === totalQuestions - 1) {
-        const score = Math.ceil((totalCorrectAnswers / totalQuestions) * 100);
+        const score = Math.ceil(
+          (quizProgress.correctAnswers.length / totalQuestions) * 100,
+        );
 
         onSubmit &&
           onSubmit({
@@ -128,6 +145,7 @@ export const QuizView = ({
               ...selectedAnswers.slice(0, currentQuestionNumber),
               selectedAnswer !== null ? selectedAnswer + 1 : -1, // Include the last selected answer
             ],
+            quizProgress,
           });
       } else {
         // Reset selected answer and move to the next question
@@ -150,6 +168,7 @@ export const QuizView = ({
   // Function to handle answer click
   const handleAnswerClick = (index: number) => {
     setSelectedAnswer(selectedAnswer === index ? null : index);
+    console.log(selectedAnswer, index);
   };
 
   return (

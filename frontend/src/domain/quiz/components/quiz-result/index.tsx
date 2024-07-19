@@ -3,6 +3,7 @@
 import { ResultsPage } from './results-page';
 type QuizResultProps = {
   score: number;
+  streakCounter: number;
 };
 
 export const QuizResult = ({ score }: QuizResultProps) => {

@@ -35,12 +35,16 @@ import { GetExamBoardByIdUseCase } from '@backend/domain/exam-board/use-cases/ge
 import { GetTopicByIdUseCase } from '@backend/domain/topic/use-cases/get-topic-by-id.use-case';
 import { UserStreakUseCase } from '@backend/domain/streak/use-cases/check-user-streak-use-case';
 import { UpdateStreakCounterUseCase } from '@backend/domain/streak/use-cases/update-streak-counter-use-case';
+import { QuizController } from './controllers/quiz-controller';
+import { GetQuizUseCase } from '@backend/domain/quiz/use-cases/get-quiz-use-cases';
+import { SubmitQuizUseCase } from '@backend/domain/quiz/use-cases/submit-quiz-use-cases';
 
 @Module({
   imports: [DatabaseModule, MailModule, MixpanelModule, StripeModule],
   controllers: [
     UserProfileController,
     NoteController,
+    QuizController,
     CountryController,
     ExamYearController,
     ExamController,
@@ -74,6 +78,8 @@ import { UpdateStreakCounterUseCase } from '@backend/domain/streak/use-cases/upd
     GetTopicByIdUseCase,
     UserStreakUseCase,
     UpdateStreakCounterUseCase,
+    GetQuizUseCase,
+    SubmitQuizUseCase,
   ],
 })
 export class HttpModule {}

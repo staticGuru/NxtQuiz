@@ -1,6 +1,7 @@
 import { GetQuizUseCase } from '@backend/domain/quiz/use-cases/get-quiz-use-cases';
 import { SubmitQuizUseCase } from '@backend/domain/quiz/use-cases/submit-quiz-use-cases';
 import { Controller, Get, Param, Post, Body } from '@nestjs/common';
+import { SubmitQuizDTO } from '../dtos/submit-quiz-dto';
 import { ApiTags } from '@nestjs/swagger';
 
 @Controller('/api/quiz')
@@ -23,9 +24,9 @@ export class QuizController {
   @Post(':id/submit')
   async submitQuizFunction(
     @Param('id') quizId: number,
-    @Body('userId') userId: number,
-    @Body('progress') progress: string,
+    @Body() submitQuizDTO: SubmitQuizDTO,
   ) {
+    const { userId, progress } = submitQuizDTO;
     const score = await this.submitQuiz.execute(quizId, userId, progress);
 
     return { score };
